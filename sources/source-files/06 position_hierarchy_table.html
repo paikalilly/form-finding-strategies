@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Position Hierarchy Table</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+
+  :root {
+    --bg: #0e0e0c;
+    --surface: #16160f;
+    --surface2: #1d1d14;
+    --border: #2a2a1e;
+    --accent: #c8a96e;
+    --accent2: #7a9e87;
+    --accent3: #c47a5a;
+    --text: #e8e4d8;
+    --text-dim: #8a8470;
+    --text-muted: #4a4840;
+
+    --accept: #4a7a5a;
+    --accept-bg: #1a2e22;
+    --reject: #7a3a3a;
+    --reject-bg: #2e1a1a;
+    --revise: #7a6a3a;
+    --revise-bg: #2a2414;
+    --downgrade: #4a5a7a;
+    --downgrade-bg: #1a2030;
+    --promote: #7a5a9a;
+    --promote-bg: #28203a;
+    --park: #5a6a5a;
+    --park-bg: #1e2420;
+    --discard: #4a4a4a;
+    --discard-bg: #1e1e1e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  header {
+    padding: 3rem 3rem 2rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), transparent);
+  }
+
+  .doc-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.02em;
+  }
+
+  .subtitle {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    padding: 1.2rem 3rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 2px;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .badge-accept   { background: var(--accept-bg);   color: #7ecfa0; border: 1px solid var(--accept); }
+  .badge-reject   { background: var(--reject-bg);   color: #e07878; border: 1px solid var(--reject); }
+  .badge-revise   { background: var(--revise-bg);   color: #d4b86a; border: 1px solid var(--revise); }
+  .badge-downgrade{ background: var(--downgrade-bg);color: #7aaad4; border: 1px solid var(--downgrade); }
+  .badge-promote  { background: var(--promote-bg);  color: #c09ad4; border: 1px solid var(--promote); }
+  .badge-park     { background: var(--park-bg);     color: #90b098; border: 1px solid var(--park); }
+  .badge-discard  { background: var(--discard-bg);  color: #888; border: 1px solid var(--discard); }
+
+  .importance {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--text-muted);
+  }
+  .dot.fill { background: var(--accent); }
+
+  .table-wrapper {
+    padding: 2rem 3rem 4rem;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  colgroup col:nth-child(1) { width: 10%; }
+  colgroup col:nth-child(2) { width: 14%; }
+  colgroup col:nth-child(3) { width: 14%; }
+  colgroup col:nth-child(4) { width: 7%; }
+  colgroup col:nth-child(5) { width: 5%; }
+  colgroup col:nth-child(6) { width: 8%; }
+  colgroup col:nth-child(7) { width: 22%; }
+  colgroup col:nth-child(8) { width: 20%; }
+
+  thead tr {
+    border-bottom: 1px solid var(--accent);
+  }
+
+  thead th {
+    padding: 0.8rem 0.8rem 0.8rem 0;
+    text-align: left;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 400;
+    vertical-align: bottom;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+
+  tbody tr:hover { background: var(--surface2); }
+
+  tbody td {
+    padding: 1rem 0.8rem 1rem 0;
+    vertical-align: top;
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  .theme-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  .doc-b-text { color: var(--text-dim); font-size: 11.5px; }
+  .doc-a-text { color: var(--text); font-size: 11.5px; }
+
+  .doc-a-text.strong { color: #e8e4d8; font-weight: 500; }
+
+  .reframe {
+    color: var(--accent2);
+    font-size: 11.5px;
+    font-style: italic;
+  }
+
+  .notes {
+    color: var(--text-dim);
+    font-size: 11px;
+  }
+
+  .role-tag {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 1px;
+  }
+
+  .section-divider {
+    padding: 1.5rem 0 0.5rem;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+  }
+
+  /* SYNTHESIS SECTION */
+  .synthesis {
+    padding: 2rem 3rem 4rem;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .syn-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+  }
+
+  .syn-block h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .syn-block ol, .syn-block ul {
+    padding-left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .syn-block li {
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .syn-block li strong {
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  .statement-block {
+    grid-column: 1 / -1;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    border-left: 3px solid var(--accent);
+    padding: 1.8rem 2rem;
+  }
+
+  .statement-block h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+  }
+
+  .statement-block p {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+  }
+
+  @media (max-width: 900px) {
+    header, .legend, .table-wrapper, .synthesis { padding-left: 1.2rem; padding-right: 1.2rem; }
+    .synthesis { grid-template-columns: 1fr; }
+    .statement-block { grid-column: 1; }
+    table { min-width: 900px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="doc-label">Diagnostic Document · Parishka · May 2026</div>
+  <h1>Position Hierarchy Table</h1>
+  <div class="subtitle">Doc A (Transcript) overrides Doc B (Consolidated Position) · For grafting purposes only · Not the final document</div>
+</header>
+
+<div class="legend">
+  <div class="legend-item"><span class="badge badge-accept">accept</span></div>
+  <div class="legend-item"><span class="badge badge-reject">reject</span></div>
+  <div class="legend-item"><span class="badge badge-revise">revise</span></div>
+  <div class="legend-item"><span class="badge badge-downgrade">downgrade</span></div>
+  <div class="legend-item"><span class="badge badge-promote">promote</span></div>
+  <div class="legend-item"><span class="badge badge-park">park</span></div>
+  <div class="legend-item"><span class="badge badge-discard">discard</span></div>
+  <div class="legend-item" style="margin-left:auto; font-size:10px;">Importance: 5 = thesis spine · 1 = discard</div>
+</div>
+
+<div class="table-wrapper">
+<table>
+<colgroup>
+  <col><col><col><col><col><col><col><col>
+</colgroup>
+<thead>
+  <tr>
+    <th>Theme / Concept</th>
+    <th>What Doc B Assumes or Claims</th>
+    <th>What Doc A Says in Response</th>
+    <th>Verdict</th>
+    <th>Importance 1–5</th>
+    <th>Essay Role</th>
+    <th>Reframe in Own Language</th>
+    <th>Notes for Later Grafting</th>
+  </tr>
+</thead>
+<tbody>
+
+<!-- BEAUTY & INTUITION -->
+<tr>
+  <td><span class="theme-name">Beauty as core value</span></td>
+  <td class="doc-b-text">Not addressed directly. Implied as a by-product of atmosphere, logic, and form-finding strategy. Never named as the primary driver.</td>
+  <td class="doc-a-text strong">"Genuinely, beauty is just my core value in architecture." Strong, repeated, with emotional force. "I will design something because I fucking felt like it." Described as the thing that years of research have been trying to justify.</td>
+  <td><span class="badge badge-promote">promote</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div></div> 5</td>
+  <td><span class="role-tag">core thesis</span></td>
+  <td class="reframe">The entire position is a long argument for why I am allowed to call something beautiful without needing to justify it to anyone — and why my intuition is a form of intelligence, not a weakness.</td>
+  <td class="notes">This needs to open or close the position document. Doc B buried it or missed it entirely. The emotional force here is the highest in the transcript. Do not dilute.</td>
+</tr>
+
+<!-- INTUITION AS INTELLIGENCE -->
+<tr>
+  <td><span class="theme-name">Kinesthetic / sensory intuition as design intelligence</span></td>
+  <td class="doc-b-text">Framed as "aphantasia and internal spatial intelligence" — a cognitive condition to be studied and categorised. Positioned as a design strategy to be operationalised.</td>
+  <td class="doc-a-text">"My intuition takes over. The design just feels right. That is a form of intelligence." Hesitant about formalising it. Doesn't want it categorised as a deficit or a "separate identity." Thinks researching it risks overcomplicating something that is simply natural to her.</td>
+  <td><span class="badge badge-revise">revise</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div></div> 4</td>
+  <td><span class="role-tag">core thesis</span></td>
+  <td class="reframe">Sensing space is not a workaround for a missing visual faculty — it is the faculty itself. The body already knows. The position is not about managing a limitation but about trusting an intelligence that mainstream architecture still doesn't fully acknowledge.</td>
+  <td class="notes">Strip the clinical framing from Doc B. Do not lead with aphantasia as a category. Lead with the experience. The diagnosis is context, not the argument.</td>
+</tr>
+
+<!-- NEURODIVERGENCE IN DESIGN -->
+<tr>
+  <td><span class="theme-name">Neurodivergence as design perspective</span></td>
+  <td class="doc-b-text">"Cognitive diversity as a revolutionary design asset." ADHD, autism, aphantasia cast as design strategies. Buckland Review cited as evidence base. Framed as a research category with tables and classifications.</td>
+  <td class="doc-a-text strong">"I love this section. Things I never thought were valid — I'm being validated on a sensitive topic." But also: "I haven't given much thought to how it affects my design. Being neurodivergent isn't a formalised design identity for me." Tension between validation and resistance to labelling.</td>
+  <td><span class="badge badge-revise">revise</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div></div> 4</td>
+  <td><span class="role-tag">support argument</span></td>
+  <td class="reframe">Neurodivergence is the lived ground of the position, not its label. It explains why space is never neutral to me, and why I design from sensation rather than image. But it is not something to perform or to make the thesis about.</td>
+  <td class="notes">Do not lead with neurodivergence as an identity claim. Lead with the spatial experience it produces. The Buckland Review is future research, not a citation to use yet.</td>
+</tr>
+
+<!-- BEAUTY + PROCESS, NOT BEAUTY + LOGIC -->
+<tr>
+  <td><span class="theme-name">Form must be logically justified</span></td>
+  <td class="doc-b-text">Repeated claim: expressive forms are only valid "when they emerge from a deeper conceptual, environmental, psychological, or experiential logic." Logic as a criterion for beauty.</td>
+  <td class="doc-a-text strong">"I don't think the logic is a criterion for me to be drawn to a pretty form... Sometimes I really just like it because it is pretty." But: "I respect it more when I understand the process." Admits this may partly be a trauma response to being invalidated in undergrad for not justifying pretty things.</td>
+  <td><span class="badge badge-revise">revise</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div></div> 4</td>
+  <td><span class="role-tag">core thesis</span></td>
+  <td class="reframe">The criterion is not logic — it is process. Understanding how a form was generated, even an arbitrary one, is what earns respect. Beauty is the first filter; process is what turns interest into respect. These are not the same as requiring logical justification.</td>
+  <td class="notes">Doc B conflates "beauty with logic" because it picked up on years of defending intuitive choices. That was a survival strategy, not a design philosophy. Separate them carefully when grafting.</td>
+</tr>
+
+<!-- FORM FOLLOWS FEELING -->
+<tr>
+  <td><span class="theme-name">Form follows feeling</span></td>
+  <td class="doc-b-text">Proposed as a direct evolution from "form follows function." Given philosophical framing via a table of architectural epistemologies. Positioned as a core claim.</td>
+  <td class="doc-a-text">"I don't agree that there's no inevitable relationship between form and function. Form follows function was a valuable statement." Accepts the feeling-based direction but resists the idea that it dismisses function. Likes the specific sentence: "the architect creates the material conditions; the user decides the meaning."</td>
+  <td><span class="badge badge-revise">revise</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div></div> 5</td>
+  <td><span class="role-tag">core thesis</span></td>
+  <td class="reframe">Form follows feeling is not a rejection of function — it is a refusal to let function collapse into technical rationalism. Function is still present; it is the atmosphere sequenced through function that becomes the act of design.</td>
+  <td class="notes">The one sentence from Doc B that truly landed: "the architect creates material conditions in which the user decides the space's meaning." Use this as an anchor. Do not build it into an epistemological table — that is generic scaffolding, not the argument.</td>
+</tr>
+
+<!-- ATMOSPHERE & SEQUENCED EXPERIENCE -->
+<tr>
+  <td><span class="theme-name">Atmosphere and sequenced spatial experience</span></td>
+  <td class="doc-b-text">Covers Zumthor and Pallasmaa, the "kaleidoscope of thought" metaphor. Framed as a research area to explore.</td>
+  <td class="doc-a-text strong">Strongest emotional response in this section: "I love this." Pallasmaa and Zumthor were among the first architects she ever read. The kaleidoscope metaphor: "I really love this — it captures atmosphere, my process, the eclectic way I put things together." Also articulates something she had not previously found language for: sequencing atmospheres that can evoke different emotions in different users — not a single mood but a range of possibilities.</td>
+  <td><span class="badge badge-promote">promote</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div></div> 5</td>
+  <td><span class="role-tag">core thesis</span></td>
+  <td class="reframe">The sequence of atmospheres is the design act. Not a single emotion but a range of conditions that hold multiple lived experiences simultaneously. The building does not prescribe how you feel — it creates the conditions in which you might.</td>
+  <td class="notes">This is where the phenomenological research (Zumthor, Pallasmaa) and the personal practice converge most cleanly. The kaleidoscope metaphor is a gift from Doc B — keep it. The "immaterial architecture" concept (Jonathan Hill) should also be researched before using.</td>
+</tr>
+
+<!-- ARCHITECTURE OF CONTRADICTION / BINARIES -->
+<tr>
+  <td><span class="theme-name">Architecture of contradiction / holding binaries</span></td>
+  <td class="doc-b-text">Brief mention of "tension of duality" and "unconventionally uncomfortable" form. Also present in the list of reconciled binaries: rational/emotional, measurable/immeasurable, technical/sacred.</td>
+  <td class="doc-a-text strong">"Meaningful design sits within the tension of binaries. Blending the mundane with the extraordinary to soothe existential displacement. I love that — it is 100% what I'm trying to achieve." Also: "I forgot I wrote that line" — indicating it was spontaneous, not performed. Strong emotional confirmation.</td>
+  <td><span class="badge badge-promote">promote</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div></div> 5</td>
+  <td><span class="role-tag">core thesis</span></td>
+  <td class="reframe">My architecture does not resolve contradictions — it holds them. The binary is not a problem to be solved but a productive tension. The space exists in the between.</td>
+  <td class="notes">This is one of the most authentic formulations in the entire transcript. It is spontaneous, forgotten, and then re-recognised as true. That is the signal. Do not over-theorise it — let it operate as a frame, not as a chapter heading.</td>
+</tr>
+
+<!-- SYSTEMS THINKING -->
+<tr>
+  <td><span class="theme-name">Systems thinking as architectural approach</span></td>
+  <td class="doc-b-text">Positioned as a core design methodology and identity. "Architect as systems governor." Systems thinking given its own section. Treated as central to form-finding.</td>
+  <td class="doc-a-text strong">"I don't know if I agree that systems thinking is part of the way I view architecture. It's an approach to how I'm trying to organise myself... a workflow that supports architecture. But I don't know what it means in terms of architectural form-finding." Strong doubt. Repeated three times across the transcript.</td>
+  <td><span class="badge badge-downgrade">downgrade</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div> 2</td>
+  <td><span class="role-tag">context</span></td>
+  <td class="reframe">Systems thinking is how I survive and organise myself as a person — it is not my architectural philosophy. The fact that architecture is inherently systemic doesn't mean systems thinking is my design approach.</td>
+  <td class="notes">Doc B over-indexed on this because "systems" appeared frequently across her data. It is a personality trait misread as a design methodology. Downgrade sharply. Do not open the position document with it.</td>
+</tr>
+
+<!-- ARCHITECT AS SYSTEMS GOVERNOR / ONTOLOGICAL SHIFT -->
+<tr>
+  <td><span class="theme-name">"Architect as systems governor" / ontological shift</span></td>
+  <td class="doc-b-text">The framing device for the entire document. The "ontological shift from technical rationalism to systems governance." Architect redefined as a "systems governor."</td>
+  <td class="doc-a-text strong">"What even does ontological mean? I know what it means but it's such an ugly looking word that it doesn't capture the position well." Rejects the title explicitly. "I disagree with this entire section title." Also questions the value of the ontological shift framing.</td>
+  <td><span class="badge badge-reject">reject</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div> 1</td>
+  <td><span class="role-tag">discard</span></td>
+  <td class="reframe">—</td>
+  <td class="notes">Do not use this framing at all. It was Doc B's imposed structure. The language is generic academic-philosophical and does not reflect how she actually thinks or speaks.</td>
+</tr>
+
+<!-- AI AS ADVERSARIAL MIRROR / DCF -->
+<tr>
+  <td><span class="theme-name">AI as adversarial mirror / Dialectical Cognition Framework</span></td>
+  <td class="doc-b-text">Major section. DCF as a formal protocol with modes (/dcf review, /dcf debug, etc.). Extended Mind Thesis. AI as a "thinking mirror." Multiple academic citations.</td>
+  <td class="doc-a-text strong">"I don't agree with this. I will suggest this body of research but I don't care about it honestly." "The dialectical critic feels argumentative. I use AI to validate or clarify intention — and positive validation is good for my self-esteem, which I need." "It's already natural. Looking inward is more important." Explicitly says she would not study DCF further.</td>
+  <td><span class="badge badge-reject">reject</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div> 2</td>
+  <td><span class="role-tag">appendix</span></td>
+  <td class="reframe">AI is useful for finding language for what I already know, and for confronting how a normative reader might misread my intentions. It is not a method. I don't need a framework to do what comes naturally.</td>
+  <td class="notes">The core insight — AI as a mirror of collective bias, not a creative partner — is worth keeping as a brief framing idea. The DCF apparatus, the modes, the protocols: discard all of it. Do not import this framework.</td>
+</tr>
+
+<!-- AI AS BENCHMARK OF SAMENESS -->
+<tr>
+  <td><span class="theme-name">AI as "benchmark of sameness"</span></td>
+  <td class="doc-b-text">A useful phrase that emerged from the original transcript. Doc B built an entire methodology around it.</td>
+  <td class="doc-a-text">Accepts the phrase. Accepts the idea. "AI is a processor of data rather than a generator of meaning. It's a benchmark of sameness." But does not want the DCF methodology built around it. The phrase is valid; the apparatus is not.</td>
+  <td><span class="badge badge-accept">accept</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div></div> 3</td>
+  <td><span class="role-tag">support argument</span></td>
+  <td class="reframe">AI generates the norm. My position is defined by the distance from it. That distance is not a method — it is a consequence of having a genuine position.</td>
+  <td class="notes">One or two sentences only. This is a framing device, not a chapter. Do not give it a section of its own in the final document.</td>
+</tr>
+
+<!-- TECHNOLOGICAL SOVEREIGNTY / SOFTWARE POLITICS -->
+<tr>
+  <td><span class="theme-name">Technological sovereignty / software politics</span></td>
+  <td class="doc-b-text">Substantive section. Autodesk monopoly, open letter, Rhino vs Revit, data ownership, Python/open source. Framed as a formal critique.</td>
+  <td class="doc-a-text strong">"My ethics and political implications of software have not changed." "This is the strongest case for where form-finding is affected by the firms that can afford certain software." "I just don't like Autodesk and Adobe." Validation felt: "I didn't know Zaha Hadid Architects protested Autodesk. That's validating." Strong continued agreement.</td>
+  <td><span class="badge badge-accept">accept</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div></div> 4</td>
+  <td><span class="role-tag">support argument</span></td>
+  <td class="reframe">Tool choice is a political act. The software an architect can or cannot afford shapes what they can or cannot design. Monopoly is not neutral — it is a form of aesthetic control.</td>
+  <td class="notes">Keep this section. Strip out the Extended Mind Thesis and distributed cognition references — she says she doesn't need to research those. Focus on: data ownership, Autodesk critique, Rhino as sovereign tool. Keep the Zaha Hadid detail.</td>
+</tr>
+
+<!-- EXTENDED MIND THESIS / DISTRIBUTED COGNITION -->
+<tr>
+  <td><span class="theme-name">Extended Mind Thesis / distributed cognition</span></td>
+  <td class="doc-b-text">Proposed as a key research area. Human cognition extends into tools. PKM as architectural extension.</td>
+  <td class="doc-a-text">"I do not need to research this because personal knowledge management is my special interest and I am well versed in it." Not a research gap — already integrated into lived practice.</td>
+  <td><span class="badge badge-discard">discard</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div> 1</td>
+  <td><span class="role-tag">discard</span></td>
+  <td class="reframe">—</td>
+  <td class="notes">Do not import this as a theoretical framework. It is background to her worldview, not a research direction or a claim to make.</td>
+</tr>
+
+<!-- RADICAL EMPATHY / SOCIAL POSITION -->
+<tr>
+  <td><span class="theme-name">Radical empathy as political stance</span></td>
+  <td class="doc-b-text">Brief mention. "Less ideological and more human-centred and anti-dehumanising." Mostly absorbed into critical regionalism and equity sections.</td>
+  <td class="doc-a-text strong">"I still believe that in the act of radical empathy, I'm making a radical political statement." "The moment you dehumanise the other side is when you've lost the argument." Strong. "I am more socially driven than politically driven — my values of empathy are stronger than my values of justice to right past wrongs." Not passive — this is an active political position.</td>
+  <td><span class="badge badge-promote">promote</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div></div> 5</td>
+  <td><span class="role-tag">core thesis</span></td>
+  <td class="reframe">Radical empathy is not softness — it is a refusal to let ideology override the human in front of you. It is also a design directive: design for the person, not the political category they represent.</td>
+  <td class="notes">This is underdeveloped in both documents but carries the highest emotional conviction. The political position needs to be rewritten from this centre, not from decolonialism as a theory. Decolonialism is context; radical empathy is the engine.</td>
+</tr>
+
+<!-- DECOLONIAL POSITION / SUBALTERN -->
+<tr>
+  <td><span class="theme-name">Decolonial architecture / subaltern spaces</span></td>
+  <td class="doc-b-text">Mentioned in the 2026 hypothesised position. "Feminist and post-colonial theories to break binaries of the Eurocentric canon." Architecture as protest. Softness and vulnerability over rigidity.</td>
+  <td class="doc-a-text strong">"I love the fact that I wrote that line — 'cheap imitation of white excellence' — I ate with that." "Maybe I got tired of writing about it, not tired of the position." "My political position needs to be reaffirmed." Strong ownership. But also admission that it is not currently at the centre of daily practice — it is more a foundational worldview that has been taken for granted.</td>
+  <td><span class="badge badge-revise">revise</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div></div> 4</td>
+  <td><span class="role-tag">support argument</span></td>
+  <td class="reframe">I am not imitating anyone's canon. I am building from my own body, my own site, my own contradictions. The refusal to justify beauty to a tradition that was never justified in the first place is already a decolonial act.</td>
+  <td class="notes">Do not import post-colonial theory as a named framework. Keep the language visceral and personal. "Cheap imitation of white excellence" is more powerful than citing Spivak. Reconnect this to beauty and intuition — they are the same argument.</td>
+</tr>
+
+<!-- ARCHITECTURE OF CARE -->
+<tr>
+  <td><span class="theme-name">Architecture of care / spaces for in-between states</span></td>
+  <td class="doc-b-text">Mentioned as one of several design priorities. Grief spaces, healing environments, neurodivergent-informed design. Listed as a value.</td>
+  <td class="doc-a-text">"I do think at the moment this feels obvious. But perhaps it is generational." Agrees but questions whether it is distinctive. Acknowledges it surfaces from mentoring, tutoring, helping neurodivergent creatives. "I believe architecture should guide people through states of change." Does not contest it but does not name it as a unique position.</td>
+  <td><span class="badge badge-accept">accept</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div></div> 3</td>
+  <td><span class="role-tag">support argument</span></td>
+  <td class="reframe">The architecture of care is not a niche programme — it is the default orientation. Designing for the in-between person — not sick enough for hospital, not okay enough for ordinary life — is designing for the actual range of human experience.</td>
+  <td class="notes">Valid but probably needs to be woven through the thesis rather than given its own section. The "in-between states" formulation is strong and should be preserved.</td>
+</tr>
+
+<!-- CRITICAL REGIONALISM -->
+<tr>
+  <td><span class="theme-name">Critical regionalism</span></td>
+  <td class="doc-b-text">Given a full chapter. Heritage-inspired strategies, Kandalama Hotel, National Museum of Qatar. Framed as a core design pillar.</td>
+  <td class="doc-a-text">"It's something I feel is obvious and logical, as opposed to something I'm passionately arguing for." "My approach has only ever reflected situated knowledge from my own worldview — I don't know how to fully engage critical regionalism because I've only designed in contexts I'm familiar with." "I'm poorly equipped — I don't have enough site or construction experience." Honest and significant.</td>
+  <td><span class="badge badge-downgrade">downgrade</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div> 2</td>
+  <td><span class="role-tag">context</span></td>
+  <td class="reframe">Criticality is part of the worldview. Critical regionalism is what it produces in practice. But the practice is not yet deep enough to claim this as a formal position — it is a natural consequence of thinking critically, not a method I have mastered.</td>
+  <td class="notes">Do not build a section around this. Acknowledge it as an orientation, not a methodology. The case studies (Kandalama, Qatar) can remain as references but should not carry weight they haven't been tested against.</td>
+</tr>
+
+<!-- SOUTH AFRICA / ESCAPE FROM INHERITED LIMITATION -->
+<tr>
+  <td><span class="theme-name">South African context / escape from inherited limitation</span></td>
+  <td class="doc-b-text">Framed as a design value: drawn to architecture that addresses service delivery, access, resource constraints. Community upliftment. Interpreted as a core motivation.</td>
+  <td class="doc-a-text strong">"Honestly, no. I've been forced to address these issues. It doesn't form part of my position. This is not the architecture that I want to be." "I can't think that far outside myself — it hits too close to home." But also: "There's a certain resilience and flexibility in South African architectural students that makes them more valuable and adaptable elsewhere." Strong rejection of the service delivery framing — replaced by a subtler claim about the value of surviving constraint.</td>
+  <td><span class="badge badge-reject">reject</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div> 1</td>
+  <td><span class="role-tag">discard</span></td>
+  <td class="reframe">South Africa produced a kind of resilience and adaptability that is not replicable. That is the value. Not: I design for South Africa's problems.</td>
+  <td class="notes">Doc B badly misread this. The South African context is biographical context, not a design agenda. Replace with the resilience / adaptability framing she offers instead. The community upliftment angle is someone else's position.</td>
+</tr>
+
+<!-- ADAPTIVE REUSE -->
+<tr>
+  <td><span class="theme-name">Adaptive reuse / layered systems</span></td>
+  <td class="doc-b-text">Given a paragraph. Circularity, cultural continuity, embodied memory. Aligned with her worldview.</td>
+  <td class="doc-a-text">"I think it's cool but I don't think it's something I'm particularly interested in... I really admire people that work with adaptive reuse but I don't have any individual desire to engage it on my own."</td>
+  <td><span class="badge badge-park">park</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div> 2</td>
+  <td><span class="role-tag">future research</span></td>
+  <td class="reframe">Values-adjacent but not currently mine. May evolve there. Do not claim it now.</td>
+  <td class="notes">Remove from the position document. Note it as a possible evolution point only.</td>
+</tr>
+
+<!-- COMPUTATIONAL DESIGN -->
+<tr>
+  <td><span class="theme-name">Computational design / parametric tools</span></td>
+  <td class="doc-b-text">Positioned as a key area to develop. Agentic AI, Grasshopper, MCP. "Computation should structure intuition." Treated as an established part of practice.</td>
+  <td class="doc-a-text">"I simply do not have enough experience with computational design. I've never seen someone explain computational design principles outside of my lectures with Gustavo. It's beyond my position at the moment and requires further research." Honest about the gap. Likes the phrase "computation should structure intuition" but cannot yet claim the practice.</td>
+  <td><span class="badge badge-park">park</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div></div> 3</td>
+  <td><span class="role-tag">future research</span></td>
+  <td class="reframe">I know what computation should do — it should make invisible systems visible, and choreograph relationships rather than produce empty complexity. I do not yet know how to do it. That distinction matters.</td>
+  <td class="notes">The aspiration is clear and should be stated as such. Do not present computational design as current competency. The phrase "computation should structure intuition" is worth keeping as a directional statement, not a claim.</td>
+</tr>
+
+<!-- ENVIRONMENT / ECOLOGY -->
+<tr>
+  <td><span class="theme-name">Environmental / ecological position</span></td>
+  <td class="doc-b-text">Long section listing landscape, water, terrain, biophilia, passive cooling, environmental sensitivity. "Architecture should not dominate landscape." Extensive list of ecological values.</td>
+  <td class="doc-a-text">"Please do not treat me like I've never studied my own degree." — on the listing of light, water, vegetation. Irritation at generic treatment. But: "Environment is a marriage of ethics and experience — I like that. It makes it harder to deny." Accepts the position as orientation; rejects the listing as generic.</td>
+  <td><span class="badge badge-revise">revise</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div></div> 3</td>
+  <td><span class="role-tag">support argument</span></td>
+  <td class="reframe">Ecology is not a sustainability checklist. It is experiential and ethical at once. When you feel the environment rather than audit it, the ethics follow naturally.</td>
+  <td class="notes">Cut the list. Keep the ethical-experiential merger as one clean sentence. This is a supporting value, not a chapter.</td>
+</tr>
+
+<!-- CURRENT MOVEMENTS / GLOBAL CONDITIONS -->
+<tr>
+  <td><span class="theme-name">Contemporary global conditions shaping form-finding</span></td>
+  <td class="doc-b-text">Comprehensive list: climate anxiety, AI, loneliness, mental health, hyper-optimisation, etc. Framed as context for research.</td>
+  <td class="doc-a-text">"My initial position appropriately summated these. But I can't say how form-finding is actually responding to each item." Accepts the list as accurate context but does not claim to have answered it. Notes the problem question from Doc B: "What does form-making become in an age where humans are psychologically fragmented, environmentally unstable, and increasingly mediated by algorithms?" — loves this question.</td>
+  <td><span class="badge badge-accept">accept</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div></div> 3</td>
+  <td><span class="role-tag">context</span></td>
+  <td class="reframe">The question is the contribution: What does form-making become when humans are psychologically fragmented, environmentally unstable, and increasingly mediated by algorithms?</td>
+  <td class="notes">Use this as the framing question, not as a list to answer. The question from Doc B that she loved ("what does form-making become...") should appear early — possibly as the opening provocation.</td>
+</tr>
+
+<!-- SPECTACLE / INSTAGRAM ARCHITECTURE -->
+<tr>
+  <td><span class="theme-name">Critique of spectacle / image-production architecture</span></td>
+  <td class="doc-b-text">Present as a values statement. Distrust of empty visual production, Instagram architecture, hyper-rendered aesthetics.</td>
+  <td class="doc-a-text">"I'm already seeing a desensitisation from myself and my peers — we don't care about pretty images that feel too perfect. We respect the process more than the output." Partially confirms, but complicates: admits sometimes she just likes something because it is pretty. Not a clean rejection of spectacle — more a shift in what she respects.</td>
+  <td><span class="badge badge-revise">revise</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div></div> 3</td>
+  <td><span class="role-tag">support argument</span></td>
+  <td class="reframe">Spectacle is not wrong because it is pretty. It is shallow because it has no process behind it. The fatigue is real — increasingly, what earns respect is not the image but the intelligence that generated it.</td>
+  <td class="notes">Nuance this carefully. She is not anti-beauty. She is anti-process-less beauty. The distinction matters and should not be flattened into a generic critique of Instagram.</td>
+</tr>
+
+<!-- PEAK SHIFT PRINCIPLE -->
+<tr>
+  <td><span class="theme-name">Peak shift principle</span></td>
+  <td class="doc-b-text">Not mentioned anywhere in Doc B.</td>
+  <td class="doc-a-text strong">"Oh, one thing I never actually addressed — the peak shift principle, which I think is possibly at its core of my position, or just my perceptions of beauty." Unprompted, unreferenced, described as potentially foundational to how she perceives beauty.</td>
+  <td><span class="badge badge-promote">promote</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div></div> 4</td>
+  <td><span class="role-tag">future research</span></td>
+  <td class="reframe">The peak shift principle may be the mechanism behind why certain forms feel beautiful to me — not yet researched enough to claim, but too important to ignore.</td>
+  <td class="notes">This emerged spontaneously, unrehearsed. That is the strongest signal it is genuinely important. Do not use it as a claim yet — research it first. Flag it as a priority research gap.</td>
+</tr>
+
+<!-- SHARED THEORY OF MIND -->
+<tr>
+  <td><span class="theme-name">Shared theory of mind</span></td>
+  <td class="doc-b-text">Mentioned in the neuro-inclusive section. The ability to intuit another person's consciousness. Used to frame autism as a design sensitivity.</td>
+  <td class="doc-a-text">"I definitely need to research further." Named as interesting, not yet owned as a claim.</td>
+  <td><span class="badge badge-park">park</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div></div> 3</td>
+  <td><span class="role-tag">future research</span></td>
+  <td class="reframe">Not yet claimable. Park for research.</td>
+  <td class="notes">Promising but unresearched. Do not use in the main argument. Return to after reading more.</td>
+</tr>
+
+<!-- IMMATERIAL ARCHITECTURE -->
+<tr>
+  <td><span class="theme-name">Immaterial architecture (Jonathan Hill)</span></td>
+  <td class="doc-b-text">Briefly introduced. Architect creates material conditions; user decides meaning.</td>
+  <td class="doc-a-text">"Very interesting. I have no idea what this means. Definitely must research further." But the core idea — architect creates conditions, user creates meaning — she accepted as a perfect articulation of something she had been trying to say.</td>
+  <td><span class="badge badge-park">park</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div></div> 3</td>
+  <td><span class="role-tag">future research</span></td>
+  <td class="reframe">The idea is right. The text needs to be read before it is cited.</td>
+  <td class="notes">The single sentence ("architect creates material conditions; user decides meaning") landed as a genuine insight. Research the full Jonathan Hill text before using. Do not cite it based on Doc B's summary.</td>
+</tr>
+
+<!-- A(RT)SYLUM / HETEROTOPIA -->
+<tr>
+  <td><span class="theme-name">A(rt)sylum / heterotopia / healing environments</span></td>
+  <td class="doc-b-text">Proposed as a central design concept. Heterotopic programming, liminal spaces, refuge for neuroatypical and displaced. Positioned as the thesis project concept.</td>
+  <td class="doc-a-text">Not explicitly addressed in the transcript. Indirectly supported by the architecture of care and in-between states discussion. Not mentioned by name.</td>
+  <td><span class="badge badge-park">park</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div></div> 3</td>
+  <td><span class="role-tag">future research</span></td>
+  <td class="reframe">The concept may be the programme, not the position. Hold it for the thesis project, not the position document.</td>
+  <td class="notes">Cannot confirm from this transcript whether A(rt)sylum is still live as a thesis concept or whether it belongs in the position at all. Do not import it as a claim without confirmation.</td>
+</tr>
+
+<!-- PROMPT ENGINEERING / AI METHODOLOGY -->
+<tr>
+  <td><span class="theme-name">Prompt engineering as a skill to develop</span></td>
+  <td class="doc-b-text">Not addressed directly, but implied through the DCF apparatus.</td>
+  <td class="doc-a-text">"Prompt engineering is useful but extremely case specific... if I could figure out exactly what I need to tell an AI to do, I may as well do it myself. Because that represents the greater battle for me — getting to clarity is where AI is most useful."</td>
+  <td><span class="badge badge-discard">discard</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div> 1</td>
+  <td><span class="role-tag">discard</span></td>
+  <td class="reframe">—</td>
+  <td class="notes">Not a position claim. Process note only. Discard from the document entirely.</td>
+</tr>
+
+<!-- VR/AR / EMERGING TECH -->
+<tr>
+  <td><span class="theme-name">VR/AR / emerging technologies in architecture</span></td>
+  <td class="doc-b-text">Proposed as part of technological trends. Heritage simulation, user testing. Agentic AI. MCP in BIM.</td>
+  <td class="doc-a-text">"I don't know how I feel about VR and AR. They don't replace a physical building. I don't have enough experience with computational design to know how relevant these are in form-finding."</td>
+  <td><span class="badge badge-discard">discard</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div> 1</td>
+  <td><span class="role-tag">discard</span></td>
+  <td class="reframe">—</td>
+  <td class="notes">Generic technological horizon-scanning. Entirely unrelated to her actual position. Discard.</td>
+</tr>
+
+<!-- IDENTITY / SELF-AUTHORSHIP -->
+<tr>
+  <td><span class="theme-name">Architecture as self-authorship / identity</span></td>
+  <td class="doc-b-text">Addressed in the "identity and self-making" section. Architecture as existential project. "Parishka" as core identity. Personal branding as architectural translation.</td>
+  <td class="doc-a-text">"I agree with most of it. I like that it drew so much breadth from the variety of conversations we've had." "Architecture is one of the few fields big enough to hold your contradictions." "My attraction to architecture is existential." Does not contest this section.</td>
+  <td><span class="badge badge-accept">accept</span></td>
+  <td><div class="importance"><div class="dot fill"></div><div class="dot fill"></div><div class="dot fill"></div><div class="dot"></div><div class="dot"></div></div> 3</td>
+  <td><span class="role-tag">context</span></td>
+  <td class="reframe">Architecture is where I go to hold what I am. It is not just a profession. But this is biographical context, not a position claim — it explains why I am here, not what I am arguing.</td>
+  <td class="notes">Use as introductory context or personal framing only. Do not make it a section of its own. It is the motivation for the position, not the position.</td>
+</tr>
+
+</tbody>
+</table>
+</div>
+
+<!-- SYNTHESIS -->
+<div class="synthesis">
+
+  <div class="syn-block" style="grid-column: 1 / -1;">
+    <h2>Top 5 Core Themes — the Thesis Spine</h2>
+    <ol>
+      <li><strong>Beauty as the primary value and the primary argument.</strong> Years of position-building have been an attempt to justify the right to call something beautiful without needing institutional permission. This is the spine. Everything else — the phenomenology, the neurodivergence, the decolonial politics — serves this.</li>
+      <li><strong>Form follows feeling, held in tension with form follows function.</strong> Not a rejection of function but a refusal to let function collapse into technical rationalism. The form-finding act is the sequencing of atmospheres that hold multiple lived experiences simultaneously — not a prescribed emotion but a range of conditions.</li>
+      <li><strong>Architecture of contradiction: holding binaries rather than resolving them.</strong> The most spontaneous and emotionally confirmed idea in the transcript. Meaningful design sits within the tension of binaries. This is not a theory — it is a disposition that should govern the entire document.</li>
+      <li><strong>Radical empathy as both political position and design directive.</strong> Not softness — a refusal to let ideology override the human in front of you. In the act of radical empathy, a radical political statement is being made. This connects decolonial politics, neurodivergent design, care architecture, and the critique of spectacle into a single ethical engine.</li>
+      <li><strong>Kinesthetic / sensory intuition as a form of intelligence.</strong> The body already knows. This is not a workaround for aphantasia — it is the faculty itself. Architectural education has spent years demanding justification for something that is already valid. The position is the refusal to keep defending it.</li>
+    </ol>
+  </div>
+
+  <div class="syn-block">
+    <h2>Themes to Downgrade or Remove</h2>
+    <ul>
+      <li><strong>Architect as "systems governor"</strong> — rejected by name. Discard the title and the framing.</li>
+      <li><strong>Systems thinking as architectural methodology</strong> — misread by Doc B. It is a personality trait, not a design philosophy.</li>
+      <li><strong>Dialectical Cognition Framework</strong> — explicitly rejected. The apparatus is not wanted. The core insight (AI as mirror of collective bias) survives as a sentence, not a section.</li>
+      <li><strong>South Africa as a design agenda</strong> — directly rejected. Biographical context only. Community upliftment is not her position.</li>
+      <li><strong>Extended Mind Thesis / distributed cognition</strong> — already integrated. No research needed. Do not surface as a named framework.</li>
+      <li><strong>VR/AR and emerging tech</strong> — horizon-scanning filler. Discard entirely.</li>
+      <li><strong>Critical regionalism as a methodology</strong> — not enough site experience to claim it. Downgrade to orientation, not method.</li>
+      <li><strong>"Experiential systems humanism"</strong> — the term is rejected as generic. Do not use it.</li>
+      <li><strong>"Ontological shift"</strong> — ugly, inaccurate, rejected by name. Discard.</li>
+    </ul>
+  </div>
+
+  <div class="syn-block">
+    <h2>Useful but Needs Further Research</h2>
+    <ul>
+      <li><strong>Peak shift principle</strong> — spontaneously named as possibly foundational to her perception of beauty. Highest-priority research gap. Do not claim before reading.</li>
+      <li><strong>Immaterial architecture (Jonathan Hill)</strong> — the core idea landed. Read the text before citing it.</li>
+      <li><strong>Shared theory of mind</strong> — named for further research. Interesting, not yet owned.</li>
+      <li><strong>Buckland Review of Autism Employment</strong> — named as valuable. Read before using in the neuro-inclusive argument.</li>
+      <li><strong>Computational design / parametric tools</strong> — aspirational but not yet practised. State the aspiration clearly; do not claim the competency.</li>
+      <li><strong>A(rt)sylum / heterotopia</strong> — cannot confirm its current status from this transcript. Research the concept before deciding whether it belongs in the position document or only in the thesis project.</li>
+    </ul>
+  </div>
+
+  <div class="statement-block">
+    <h2>What the Actual Architectural Position Appears to Be — Based Only on These Two Documents</h2>
+    <p>
+      Architecture is a long argument for the right to call something beautiful without having to justify it to a tradition that was never justified in the first place. The position emerges from a body — sensory, neurodivergent, kinesthetically intelligent — that understands space before it can theorise it. Design begins not with shape or logic but with the question of how a sequence of atmospheres might hold the full, contradictory range of human experience without prescribing how anyone should feel within it. The architect does not resolve binaries. She holds them open. Beauty and function. Emotion and intelligence. Tradition and disruption. The mundane and the extraordinary. In that tension — not resolved, not collapsed, but held — meaningful space becomes possible. This is also a political position: refusing to imitate a canon that demanded no justification of itself, and refusing to dehumanise anyone whose politics conflict with that refusal. The act of designing for the person in front of you, in all their sensory specificity and cognitive reality, is already radical. The position does not need a framework to be valid. It needs to be stated clearly, in its own language, once.
+    </p>
+  </div>
+
+</div>
+
+</body>
+</html>
