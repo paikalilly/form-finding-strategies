@@ -1,0 +1,661 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>References &amp; Prompts — A2 Essay</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --magenta:      #B5406E;
+    --magenta-pale: #C9738F;
+    --teal:         #2E9E96;
+    --teal-pale:    #5BBDB7;
+    --lime:         #9DBE44;
+    --grey-pink:    #8C7480;
+    --grey-pink-pale:#A99BA5;
+    --dark:         #0C0B10;
+    --dark-mid:     #14111A;
+    --dark-surface: #1C1825;
+    --dark-raised:  #231E2E;
+    --text:         #EDE8F5;
+    --text-dim:     #9B91B0;
+    --text-muted:   #5C5270;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 1000; opacity: 0.4;
+  }
+
+  nav {
+    position: sticky; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.25rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(12,11,16,0.97);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .nav-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .nav-back {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--grey-pink);
+    text-decoration: none;
+    border: 1px solid rgba(140,116,128,0.3);
+    border-radius: 2px;
+    padding: 0.3rem 0.7rem;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .nav-back:hover { color: var(--teal-pale); border-color: var(--teal); }
+
+  .nav-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .page-header {
+    padding: 5rem 3rem 3rem;
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative; z-index: 1;
+  }
+
+  .page-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--grey-pink);
+    margin-bottom: 1.25rem;
+  }
+
+  .page-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+  }
+
+  .page-title em { font-style: italic; color: var(--magenta-pale); }
+
+  .page-intro {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    max-width: 600px;
+  }
+
+  /* --- CONTENT --- */
+  .content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 3rem 6rem;
+    position: relative; z-index: 1;
+  }
+
+  .section-block {
+    margin-bottom: 5rem;
+    padding-bottom: 5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .section-block:last-child { border-bottom: none; }
+
+  .block-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    display: flex; align-items: center; gap: 1.5rem;
+  }
+
+  .block-label::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: var(--text-muted);
+    opacity: 0.2;
+  }
+
+  /* References list */
+  .ref-entry {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .ref-entry:last-child { border-bottom: none; margin-bottom: 0; }
+
+  .ref-entry p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    line-height: 1.9;
+    margin-bottom: 0.5rem;
+  }
+
+  .ref-prompt {
+    display: block;
+    margin-top: 0.3rem;
+    padding: 0.5rem 1rem;
+    border-left: 1px solid rgba(46,158,150,0.3);
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .ref-prompt:hover { color: var(--teal-pale); border-color: var(--teal); }
+
+  /* Prompt blocks */
+  .prompt-block {
+    background: var(--dark-raised);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 3px;
+    margin-bottom: 3rem;
+    overflow: hidden;
+  }
+
+  .prompt-header {
+    padding: 1.25rem 1.75rem;
+    background: var(--dark-surface);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+  }
+
+  .prompt-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--magenta-pale);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .prompt-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+
+  .prompt-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+
+  .prompt-sources {
+    padding: 1rem 1.75rem;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .prompt-sources p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .prompt-sources strong {
+    color: var(--grey-pink-pale);
+    font-weight: 400;
+  }
+
+  .prompt-sources a {
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(140,116,128,0.25);
+  }
+
+  .prompt-text {
+    padding: 1.5rem 1.75rem;
+  }
+
+  .prompt-text p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text-dim);
+    line-height: 1.9;
+    margin-bottom: 0.75rem;
+    white-space: pre-wrap;
+  }
+
+  .prompt-text p:last-child { margin-bottom: 0; }
+
+  .prompt-text .bullet {
+    padding-left: 1rem;
+    border-left: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 0.3rem;
+  }
+
+  /* Source files */
+  .source-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .source-item {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 1rem;
+    align-items: start;
+    padding: 0.75rem 1rem;
+    background: var(--dark-surface);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 2px;
+  }
+
+  .source-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--grey-pink);
+    padding-top: 0.1rem;
+  }
+
+  .source-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .source-name a,
+  .figure-list a {
+    color: var(--text-dim);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(140,116,128,0.25);
+  }
+
+  .figure-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .figure-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    line-height: 1.8;
+    padding: 1rem;
+    background: var(--dark-surface);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 2px;
+  }
+
+  .figure-item strong {
+    color: var(--magenta-pale);
+    font-weight: 400;
+  }
+
+  footer {
+    padding: 2rem 3rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    text-align: center;
+  }
+
+  footer p {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.52rem;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-title">A2 Essay — References &amp; Prompts</span>
+  <div class="nav-actions">
+    <a href="index.html" class="nav-back">Essay</a>
+    <a href="source-files.html" class="nav-back">Source Files</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <p class="page-eyebrow">Form-Finding Strategies A2 — 2026</p>
+  <h1 class="page-title">References<br><em>&amp; Prompts</em></h1>
+  <p class="page-intro">AI interactions were conducted using ChatGPT (OpenAI), Claude (Anthropic), and Gemini (Google) between May and June 2026. All prompts and selected outputs are documented below. These conversations informed the development of the argument but were critically interpreted by the author.</p>
+</div>
+
+<div class="content">
+
+  <!-- -- REFERENCE LIST -- -->
+  <div class="section-block">
+    <div class="block-label">Reference List</div>
+
+    <div class="ref-entry">
+      <p>OpenAI. (2026). ChatGPT, Large language model. Available at: https://chat.openai.com (Accessed: 7 May 2026).</p>
+      <a class="ref-prompt" href="#prompt-01">Prompt 1 — Memory interpretation. Response referenced in Section 2.</a>
+    </div>
+
+    <div class="ref-entry">
+      <p>Google (2026). NotebookLM [Retrieval-augmented generation tool]. Available at: https://notebooklm.google.com/ (Accessed: 7 May 2026).</p>
+      <a class="ref-prompt" href="#prompt-02">Prompt 2 — Old writings interpretation. Response referenced in Section 2.</a>
+    </div>
+
+    <div class="ref-entry">
+      <p>Google (2026). Google Deep Research [Research agent]. Available at: https://gemini.google.com/ (Accessed: 7 May 2026).</p>
+      <a class="ref-prompt" href="#prompt-03">Prompt 3 — Explore and justify voice note transcript. Response referenced in Section 2.</a>
+      <a class="ref-prompt" href="#prompt-07">Prompt 7 — Gemini Deep Research for Case Studies. Response referenced in Section 3.</a>
+    </div>
+
+    <div class="ref-entry">
+      <p>Anthropic. (2026). Claude, Large language model. Available at: https://claude.ai (Accessed: 7 May 2026).</p>
+      <a class="ref-prompt" href="#prompt-04">Prompt 4 — Claude Position Hierarchy Table. Response referenced in Section 2.</a>
+      <a class="ref-prompt" href="#prompt-05">Prompt 5 — Claude Grafting Blueprint. Used to inform Section 3.</a>
+      <a class="ref-prompt" href="#prompt-08">Prompt 8 — Claude summary and comparison. Used as Section 3.</a>
+    </div>
+
+    <div class="ref-entry">
+      <p>OpenAI. (2026). Codex, Software engineering agent. Available at: https://openai.com/codex/ (Accessed: 7 May 2026).</p>
+      <a class="ref-prompt" href="#prompt-06">Prompt 6 — Codex Grafted Document and Gemini Deep Research Prompt. Used to inform Section 3.</a>
+    </div>
+  </div>
+
+  <!-- -- SOURCE FILES -- -->
+  <div class="section-block">
+    <div class="block-label">Source Files — in order of use</div>
+    <div class="source-list">
+      <div class="source-item"><span class="source-num">01</span><span class="source-name"><a href="source-files.html#source-01">Assignment brief</a></span></div>
+      <div class="source-item"><span class="source-num">02</span><span class="source-name"><a href="source-files.html#source-02">Voice note transcript</a></span></div>
+      <div class="source-item"><span class="source-num">03</span><span class="source-name"><a href="source-files.html#source-03-2">Think pieces from theory assignments in past</a></span></div>
+      <div class="source-item"><span class="source-num">04</span><span class="source-name"><a href="source-files.html#source-04">Consolidated initial position document — manually thematically combined all output prompts and Gemini research report, listened to as audio file (Document A in prompts)</a></span></div>
+      <div class="source-item"><span class="source-num">05</span><span class="source-name"><a href="source-files.html#source-05">Voice note transcript 2: response to consolidated position (Document B in prompts)</a></span></div>
+      <div class="source-item"><span class="source-num">06</span><span class="source-name"><a href="source-files.html#source-06">Position Hierarchy Table</a></span></div>
+      <div class="source-item"><span class="source-num">07</span><span class="source-name"><a href="source-files.html#source-07">Grafting Blueprint</a></span></div>
+      <div class="source-item"><span class="source-num">08</span><span class="source-name"><a href="source-files.html#source-08">Gemini Prompt for Deep Research</a></span></div>
+      <div class="source-item"><span class="source-num">09</span><span class="source-name"><a href="source-files.html#source-09">Gemini Deep Research Report 2</a></span></div>
+    </div>
+  </div>
+
+  <!-- -- LIST OF FIGURES -- -->
+  <div class="section-block">
+    <div class="block-label">List of Figures</div>
+    <div class="figure-list">
+      <div class="figure-item"><strong>Fig. 1a.</strong> Bea Phi (2025) <em>Exterior of the Teshima Art Museum</em> [photograph]. Available at: <a href="https://commons.wikimedia.org/wiki/File:Exterior_of_the_Teshima_Art_Museum.jpg">Wikimedia Commons</a> (Accessed: 8 June 2026). CC BY-SA 4.0.</div>
+      <div class="figure-item"><strong>Fig. 1b.</strong> KimonBerlin (2013) <em>Teshima Art Museum</em> [photograph]. Available at: <a href="https://commons.wikimedia.org/wiki/File:Teshima_Art_Museum_(8797572559).jpg">Wikimedia Commons</a> (Accessed: 8 June 2026). CC BY-SA 2.0.</div>
+      <div class="figure-item"><strong>Fig. 1c.</strong> Wikimedia Commons contributor (n.d.) <em>Teshima Museum Ryue Nishizawa Rei Naito 1</em> [photograph]. Available at: <a href="https://commons.wikimedia.org/wiki/Category:Teshima_Art_Museum">Wikimedia Commons</a> (Accessed: 8 June 2026).</div>
+      <div class="figure-item"><strong>Fig. 2a-c.</strong> junya.ishigami+associates (2022) <em>House and Restaurant</em> [photographs]. In: SPACE/VMSPACE (2022) <em>New and Yet Old: House &amp; Restaurant</em>. Available at: <a href="https://vmspace.com/eng/project/project_view.html?base_seq=MjI3Mg%3D%3D">VMSPACE</a> (Accessed: 8 June 2026).</div>
+      <div class="figure-item"><strong>Fig. 3a-c.</strong> Dujardin, F. (2017) <em>PC Caritas</em> [photographs]. In: archaic studio (2017) <em>PC Caritas // De Vylder Vinck Taillieu</em>. Available at: <a href="https://www.archaic-studio.com/journal/2017/11/22/pc-caritas-de-vylder-vinck-taillieu">archaic studio</a> (Accessed: 8 June 2026).</div>
+      <div class="figure-item"><strong>Fig. 4a-c.</strong> Baan, I. (2021) <em>Ca'n Terra</em> [photographs]. In: Domus (2021) <em>The primitive light of Ensamble Studio</em>. Available at: <a href="https://www.domusweb.it/en/architecture/gallery/2021/01/19/the-primitive-light-of-ensamble-studio.html">Domus</a> (Accessed: 8 June 2026).</div>
+    </div>
+  </div>
+
+  <!-- -- PROMPTS -- -->
+  <div class="section-block">
+    <div class="block-label">Prompt List — full text</div>
+
+    <!-- PROMPT 1 -->
+    <div class="prompt-block" id="prompt-01">
+      <div class="prompt-header">
+        <span class="prompt-num">Prompt 01</span>
+        <span class="prompt-title">Memory Interpretation</span>
+        <span class="prompt-meta">Tool: ChatGPT — Section 2</span>
+      </div>
+      <div class="prompt-sources">
+        <p><strong>Source files:</strong> ChatGPT memory / prior conversations</p>
+      </div>
+      <div class="prompt-text">
+        <p>Based on all your memory of me, in general, from your understanding of my personality, character, and values; what is my position with regards to the following:
+- what do i believe about architectural form-finding strategies in today's world?
+- how do social, political, and environmental issues affect my thinking?
+
+Do NOT base your answers only on recent chats and my masters thesis topic. i would like you to think back further to my interests, my identity and my stance, beyond architecture; understand the root values i uphold, and then draw that back to an architectural approach or set of belief systems. you should look for reasons within my identity, about why i want to be an architect, my frustrations, my aspirations.
+
+Pretend you are a detective. you should look for patterns, and use deductive reasoning to analyse me.</p>
+      </div>
+    </div>
+
+    <!-- PROMPT 2 -->
+    <div class="prompt-block" id="prompt-02">
+      <div class="prompt-header">
+        <span class="prompt-num">Prompt 02</span>
+        <span class="prompt-title">RAG Interpretation of Old Writings</span>
+        <span class="prompt-meta">Tool: NotebookLM — Section 2</span>
+      </div>
+      <div class="prompt-sources">
+        <p><strong>Source files:</strong> <a href="source-files.html#source-03-4">phenomenology 2023</a>, <a href="source-files.html#source-03-3">deconstruction 2023</a>, <a href="source-files.html#source-03-2">post-structuralism 2023</a>, <a href="source-files.html#source-03-8">critical vernacular 2023</a>, <a href="source-files.html#source-03-7">programming 2023</a>, <a href="source-files.html#source-03-6">post-colonialism 2023</a>, <a href="source-files.html#source-03-5">gender 2023</a>, <a href="source-files.html#source-03-peak">peak shift principle 2016</a>, <a href="source-files.html#source-03-art">a(rt)sylum assignment 2023</a></p>
+      </div>
+      <div class="prompt-text">
+        <p>In response to the following questions, what would you say is the author's position?
+
+- What do you believe about form-finding in today's world?
+- How do social, political, or environmental issues affect your thinking?
+
+These texts are outdated and were not written in direct response to issues in 2026. You should hypothesise what the author likely believes about the world in 2026.</p>
+      </div>
+    </div>
+
+    <!-- PROMPT 3 -->
+    <div class="prompt-block" id="prompt-03">
+      <div class="prompt-header">
+        <span class="prompt-num">Prompt 03</span>
+        <span class="prompt-title">Deep Research — Voice Note</span>
+        <span class="prompt-meta">Tool: Gemini Deep Research — Section 2</span>
+      </div>
+      <div class="prompt-sources">
+        <p><strong>Source files:</strong> <a href="source-files.html#source-01">Assignment brief (abridged)</a>, <a href="source-files.html#source-02">voice note transcript</a></p>
+      </div>
+      <div class="prompt-text">
+        <p>I have an assignment on form-finding strategies in architecture, and i will need to articulate my position. This is the brief: [attached]
+
+Given the tasks listed above, can you analyse my voice note transcript attached, and:
+1. Summarise the voice note into relevant vs irrelevant points.
+2. For irrelevant points, make them related to the assignment by finding theories or trends that i can use.
+3. For any points made in the voice note that are unclear, find evidence and references for them.
+4. Then articulate my position and draft answers to the questions in the brief?
+
+I don't really need you to answer each question in detail, but rather present a broad overview of suggested research areas for me to develop on my own. You should focus on understanding my values and position, and finding the relevant context for me to research myself.</p>
+      </div>
+    </div>
+
+    <!-- PROMPT 4 -->
+    <div class="prompt-block" id="prompt-04">
+      <div class="prompt-header">
+        <span class="prompt-num">Prompt 04</span>
+        <span class="prompt-title">Position Hierarchy Table</span>
+        <span class="prompt-meta">Tool: Claude — Section 2</span>
+      </div>
+      <div class="prompt-sources">
+        <p><strong>Source files:</strong> <a href="source-files.html#source-04">Document A — consolidated research</a>; <a href="source-files.html#source-05">Document B — voice note transcript response</a></p>
+      </div>
+      <div class="prompt-text">
+        <p>I am giving you TWO documents only. Do not use web search. Do not use outside sources. Do not add new theories, architects, references, case studies, terminology, citations, or frameworks. Do not "improve" the argument by importing knowledge from elsewhere. Your job is ONLY to reorganise and diagnose the relationship between these two documents.
+
+DOCUMENTS:
+Document A: "Transcript response to AI consolidation" — This is my personal voice-note response. It is the source of truth. It contains my actual priorities, rejections, doubts, emotional emphasis, critiques, and authorial position.
+Document B: "Consolidated Architectural Position" — This is an AI-generated consolidation. It contains useful material, but also generic filler, overreach, misreadings, and structure that should NOT be inherited.
+
+Important: Document A is not a standalone essay. Document A is a weighting layer applied to Document B. Document B is not the authority. Document A overrides Document B.
+
+Your task is NOT to write the final position document yet. Your task is to create a POSITION HIERARCHY TABLE that will help me later graft the documents into one coherent architectural position document.
+
+Create a table with these columns:
+1. Theme / concept
+2. What Document B assumes or claims
+3. What Document A says in response
+4. Verdict: accept / reject / revise / downgrade / promote / park for later / discard
+5. Importance to my true position: 5=thesis spine, 4=major support, 3=useful but needs reframing, 2=background/context only, 1=discard or barely relevant
+6. Essay role: core thesis / support argument / context / future research / appendix / discard
+7. Reframe in my own language
+8. Notes for later grafting
+
+Rules:
+- Do not create final headings yet.
+- Do not merge the documents yet.
+- Do not follow Document B's existing structure.
+- Strong emotional response in Document A is evidence of importance.
+- Repetition in Document A is evidence of unresolved importance.
+- If Document A says something is "interesting" but not central, downgrade it.
+- If Document A rejects a framing but keeps part of the idea, mark it as "revise."
+- If Document B uses generic architectural language, identify it as generic.
+- Be conservative. Do not invent certainty where the documents show uncertainty.
+
+After the table, give me:
+1. The top 5 core themes that should govern the final position document.
+2. The themes that should be downgraded or removed.
+3. The themes that are useful but need further research before being used confidently.
+4. A short statement of what my actual architectural position seems to be, based ONLY on these two documents.</p>
+      </div>
+    </div>
+
+    <!-- PROMPT 5 -->
+    <div class="prompt-block" id="prompt-05">
+      <div class="prompt-header">
+        <span class="prompt-num">Prompt 05</span>
+        <span class="prompt-title">Grafting Blueprint</span>
+        <span class="prompt-meta">Tool: Claude (continuing from Prompt 4) — Section 3</span>
+      </div>
+      <div class="prompt-sources">
+        <p><strong>Source files:</strong> Continuing from Prompt 4 conversation</p>
+      </div>
+      <div class="prompt-text">
+        <p>Now turn this hierarchy table into a GRAFTING BLUEPRINT. Output a markdown file. Do not write the final document yet.
+
+Create a table with:
+1. Proposed new section
+2. Core argument of the section
+3. Material to use from Document A
+4. Material to use from Document B
+5. What must be rewritten
+6. What must be cut
+7. What remains uncertain
+8. Priority: core / support / context / appendix / discard
+
+Rules:
+- Document A controls the hierarchy.
+- Document B provides material only where it aligns.
+- Do not preserve Document B's original order.
+- Do not add outside sources.
+- Do not invent new theory.
+- Keep the final structure opinionated, not generic.</p>
+      </div>
+    </div>
+
+    <!-- PROMPT 6 -->
+    <div class="prompt-block" id="prompt-06">
+      <div class="prompt-header">
+        <span class="prompt-num">Prompt 06</span>
+        <span class="prompt-title">Codex Grafted Document &amp; Deep Research Prompt</span>
+        <span class="prompt-meta">Tool: OpenAI Codex — Section 3</span>
+      </div>
+      <div class="prompt-sources">
+        <p><strong>Source files:</strong> <a href="source-files.html#source-01">Abridged brief</a>, <a href="source-files.html#source-06">position hierarchy table</a>, <a href="source-files.html#source-07">grafting blueprint</a>, Sections 1–2 draft</p>
+      </div>
+      <div class="prompt-text">
+        <p>Full prompt text contained in Codex session output. See attached source file 06 — Codex Grafted Document.</p>
+      </div>
+    </div>
+
+    <!-- PROMPT 7 -->
+    <div class="prompt-block" id="prompt-07">
+      <div class="prompt-header">
+        <span class="prompt-num">Prompt 07</span>
+        <span class="prompt-title">Gemini Deep Research — Case Studies</span>
+        <span class="prompt-meta">Tool: Gemini Deep Research — Section 3</span>
+      </div>
+      <div class="prompt-sources">
+        <p><strong>Source files:</strong> <a href="source-files.html#source-01">Assignment brief</a>, <a href="source-files.html#source-06">position hierarchy table</a>, Sections 1–2</p>
+      </div>
+      <div class="prompt-text">
+        <p>Deep research prompt for case study identification and justification. Focus areas: atmosphere, phenomenology, beauty, affect, embodied perception, care, empathy, ritual, liminality, dreamscape/surreal spatial experience, tectonics, material imagination, form-finding, post-digital or AI-mediated design where relevant.
+
+Constraints: Do not write the final essay. Do not over-focus on Junya Ishigami. Do not rely only on famous, obvious examples. Do not exclude famous examples if they are genuinely precise. Do not default to generic starchitect case studies. Do not reduce my position to one theme. Do not invent my position beyond the explanation above. Do not make the answer a broad survey; keep it tied to my positionality. The goal is to give me enough well-researched options that I can decide which precedents best reflect my architectural position.
+
+Audio-friendly format requirement: I listen to the output using audio. Do not use tables. Do not use dense semicolon-separated lists. Use short headings, short paragraphs, and clear full sentences. South African English.</p>
+      </div>
+    </div>
+
+    <!-- PROMPT 8 -->
+    <div class="prompt-block" id="prompt-08">
+      <div class="prompt-header">
+        <span class="prompt-num">Prompt 08</span>
+        <span class="prompt-title">Claude Summary and Comparison — Section 3</span>
+        <span class="prompt-meta">Tool: Claude — Section 3</span>
+      </div>
+      <div class="prompt-sources">
+        <p><strong>Source files:</strong> <a href="source-files.html#source-06">Position hierarchy table</a>, <a href="source-files.html#source-09">Research Report 2</a>, <a href="source-files.html#source-01">assignment brief</a>, essay written to end of Section 2</p>
+      </div>
+      <div class="prompt-text">
+        <p>You are assisting with Section 3 ("Developed Argument and Case Studies") of an architecture essay. You will be provided with:
+1. The assignment brief.
+2. My completed Sections 1 and 2.
+3. A position hierarchy document identifying the final themes of my architectural position.
+4. A research report containing proposed architectural precedents.
+
+Important methodological note: The research report has already identified and justified the precedents in relation to my position. I then reviewed the precedents visually and assigned intuitive preference ratings based on my immediate architectural response to the projects. Because my position explicitly argues that beauty, atmosphere, sensory intelligence, embodied experience, and intuition are valid forms of architectural judgement, these ratings should be treated as a meaningful part of the selection methodology rather than arbitrary personal preference.
+
+The ratings are: Teshima Art Museum — 9/10, PC Caritas — 9/10, Ca'n Terra — 9/10, House &amp; Restaurant — 8/10, Bruder Klaus Field Chapel — 7/10, Telet—n Children's Rehabilitation Center — 6/10, Water Cathedral — 6/10, Igualada Cemetery — 5/10.
+
+Your task is to write ONLY Section 3: Developed Argument and Case Studies.
+
+Requirements:
+- Target approximately 600 words. Do not exceed 700 words.
+- Do not rewrite, critique, or restructure Sections 1 and 2.
+- Do not write the conclusion or reflection section.
+- Do not introduce new precedents or new research.
+- Use only the information contained within the supplied documents.
+
+Argument structure: The section should not read as separate precedent summaries. Instead, construct a single coherent argument supported by case study evidence. The argument should demonstrate how the selected precedents collectively support: beauty as a primary architectural value; form follows feeling held in tension with form follows function; atmosphere as a sequence of spatial conditions rather than a prescribed emotional outcome; architecture as the productive holding of contradictions; radical empathy and care as architectural acts; kinesthetic and sensory intelligence as valid forms of spatial knowledge.
+
+Writing style: Academic but readable. Avoid generic architectural clich—s. Avoid excessive theoretical jargon. Prioritise clarity and specificity. Write in a voice that reflects a personal architectural position being defended rather than a neutral literature review. Focus on atmosphere, embodiment, materiality, process, contradiction, and care.
+
+After the 600-word argument, provide:
+1. A list of the case studies actually used.
+2. A short explanation (1–2 sentences each) of why they were selected.
+3. Three recommended images per case study.
+4. A brief note explaining what each image demonstrates within the argument.
+5. Suggested figure captions suitable for academic use.
+
+Do not fabricate citations or references. Use only information contained in the supplied documents. OUTPUT A PLAIN TEXT RESPONSE.</p>
+      </div>
+    </div>
+
+  </div><!-- end .content -->
+</div>
+
+<footer>
+  <p>Form-Finding Strategies in Architecture — A2 Essay — 2026 &nbsp;—&nbsp; Architecture Theory &nbsp;—&nbsp; References &amp; Prompts</p>
+</footer>
+
+</body>
+</html>
