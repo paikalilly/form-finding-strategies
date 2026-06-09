@@ -1,12 +1,5 @@
----
 created: 2026-05-12 07:35
-type:
-domain:
-action:
-links:
-tags:
-custom-width: 100
----
+
 I have a few thoughts regarding the AI-consolidated position document, which is that most of it was complete bullshit. 
 I may have to recognise that my approach to this was naive or wrong. 
 But everything from ChatGPT treated me like I was not an architect, explained absolutely generic shit to me that was of no value. 
